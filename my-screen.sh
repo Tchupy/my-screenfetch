@@ -84,7 +84,7 @@ export TERM=xterm-256color
 
 # GET IP ADDRESS
         # awful hack to hide tunnel interface (openvpn interface)
-        # TODO : display all IPv4 addressesif there is different interface and/or tunnel
+        # TODO : display all IPv4 addresses if there is different interface and/or tunnel
         ipv4_priv=`ip -4 address show primary scope global | awk '/inet/ && !/tun/ {print $2}'`
 
 	out_ipv4="$(tput setaf 9)IPv4(private):\t$(tput setaf 15)$ipv4_priv "
@@ -143,7 +143,6 @@ export TERM=xterm-256color
 		done
 
 # echo MOTD
-#$(tput sgr0)"
 
 green="\033[01;32m"
 red="\033[01;31m"
@@ -152,10 +151,11 @@ yellow="\033[01;33m"
 
 case $ID in
 	"raspbian")
+		# Define color 
 		c1=$green
 		c2=$red
 
-		output=(
+		output=("\n"
 		"${c1}    .',;:cc;,'.    .,;::c:,,.    %b"
 		"${c1}   ,ooolcloooo:  'oooooccloo:    %b"
 		"${c1}   .looooc;;:ol  :oc;;:ooooo'    %b"
@@ -174,18 +174,16 @@ case $ID in
 		"${c2}      ..''.     .    .''..       %b"
 		"${c2}            .'''''''             %b"
 		"${c2}             ......              %b"
-		"$(tput sgr0)")
+		"$(tput sgr0)\n")
 		;;
 
 	"ubuntu")
-		# c1 = white
-		# c2 = red
-		# c3 = yellow
+		# Define color 
 		c1=$white
 		c2=$red
 		c3=$yellow
 
-		output=(
+		output=("\n"
 		"${c2}                          ./+o+-      %b"
 		"${c1}                  yyyyy- ${c2}-yyyyyy+     %b"
 		"${c1}               ${c1}://+//////${c2}-yyyyyyo     %b"
@@ -204,16 +202,15 @@ case $ID in
 		"${c2}               /osyyyyyyo${c3}++ooo+++/    %b"
 		"${c2}                   \`\`\`\`\` ${c3}+oo+++o\:    %b"
 		"${c3}                          \`oo++.      %b"
-		"$(tput sgr0)")
+		"$(tput sgr0)\n")
 		;;
 
 	"debian")
-		# c1 = white
-		# c2 = red
+		# Define color 
 		c1=$white
 		c2=$red
 
-		output=(
+		output=("\n"
 		"${c1}         _,met\$\$\$\$\$gg.          %b"
 		"${c1}      ,g\$\$\$\$\$\$\$\$\$\$\$\$\$\$\$P.       %b"
 		"${c1}    ,g\$\$P\"\"       \"\"\"Y\$\$.\".     %b"
@@ -232,7 +229,7 @@ case $ID in
 		"${c1}            \`\"Y\$b._             %b"
 		"${c1}                \`\"\"\"\"           %b"
 		"${c1}                                %b"
-		"$(tput sgr0)")
+		"$(tput sgr0)\n")
 		;;
 esac
 
