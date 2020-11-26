@@ -101,30 +101,33 @@ export TERM=xterm-256color
 		output_array=("${output_array[@]}" "$ipv4_pub")	
 	fi
 	
-	ipv6_global=`ip -6 address show primary scope global | grep -E 'inet6' | awk -F' ' '{print $2}'`
-	if [ -n "$ipv6_global" ]; then
+	# search for static IPv6 if exist
+	ipv6_global_static=`ip -6 address show primary scope global -dynamic | grep -E 'inet6' | awk -F' ' '{print $2}'`
+	if [ -n "$ipv6_global_static" ]; then
 		#there is an IPv6 address
-		out_ipv6_global="$(tput setaf 9)IPv6(global): \t$(tput setaf 15)$ipv6_global "
-		output_array=("${output_array[@]}" "$out_ipv6_global")
+		out_ipv6_global_static="$(tput setaf 9)IPv6(static): \t$(tput setaf 15)$ipv6_global_static "
+		output_array=("${output_array[@]}" "$out_ipv6_global_static")
 	fi
 
-	if [ `ip -6 address show primary scope global temporary | wc -l` -gt 0 ]; then
-		# at least one temporary IPv6 address exists
-		# extract only address that is not deprecated
-		ipv6_tmp=`ip -6 address show primary scope global temporary -deprecated | grep -E 'inet6' | awk -F' ' '{print $2}'`
-	else
-		# there is no temporary address
-		ipv6_tmp=""
+	# search for SLAAC address 
+	ipv6_slaac=`ip -6 address show primary scope global dynamic | grep -E 'inet6' | awk -F' ' '{print $2}'`
+	if [ -n "$ipv6_slaac" ]; then
+		#there is an SLAAC IPv6 address
+		out_ipv6_global_slaac="$(tput setaf 9)IPv6(slaac): \t$(tput setaf 15)$ipv6_slaac "
+		output_array=("${output_array[@]}" "$out_ipv6_global_slaac")
 	fi
 
-	if [ -z "$ipv6_tmp" ]; then
-		# there is no IPv6 temporary address
-		out_ipv6_tmp=""
-	else
-		# there is an existing IPv6 temporary address
-		out_ipv6_tmp="$(tput setaf 9)IPv6(temp): \t$(tput setaf 15)$ipv6_tmp "
-		output_array=("${output_array[@]}" "$out_ipv6_tmp")
+	# search for temporary IPv6 address (IPv6 privacy extension enabled)
+	# at least one temporary IPv6 address exists
+	# extract only address that is not deprecated
+	# extract first address (if there is many temp address, 1st one may be the oldest & the one that must be used)
+	ipv6_tmp=`ip -6 address show primary scope global temporary -deprecated | grep -E 'inet6' | awk -F' ' 'NR==1 {print $2}'`
+	if [ -n "$ipv6_tmp" ]; then
+		#there is an temporary IPv6 address
+		out_ipv6_global_tmp="$(tput setaf 9)IPv6(tmp): \t$(tput setaf 15)$ipv6_tmp "
+		output_array=("${output_array[@]}" "$out_ipv6_global_tmp")
 	fi
+
 
 # GET HDD space
 	# get all filesystem but temp FS
