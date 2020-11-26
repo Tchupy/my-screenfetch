@@ -151,6 +151,7 @@ green="\033[01;32m"
 red="\033[01;31m"
 white="\033[01;37m"
 yellow="\033[01;33m"
+blue="\033[38;5;68m"
 
 case $ID in
 	"raspbian")
@@ -232,6 +233,33 @@ case $ID in
 		"${c1}            \`\"Y\$b._             %b"
 		"${c1}                \`\"\"\"\"           %b"
 		"${c1}                                %b"
+		"$(tput sgr0)\n")
+		;;
+	"osmc")
+		# Define color
+		c1=$blue
+		output=("\n"
+
+		"${c1}              -+shdmNNNNmdhs+-             %b"
+		"${c1}          .+hMNho/:..``..:/ohNMh+.           %b"
+		"${c1}        :hMdo.                .odMh:       %b"
+		"${c1}      -dMy-                      -yMd-     %b"
+		"${c1}     sMd-                          -dMs    %b"
+		"${c1}    hMy       +.            .+       yMh   %b"
+		"${c1}   yMy        dMs.        .sMd        yMy  %b"
+		"${c1}  :Mm         dMNMs\`    \`sMNMd        \`mM: %b"
+		"${c1}  yM+         dM//mNs\`\`sNm//Md         +My %b"
+		"${c1}  mM-         dM:  +NNNN+  :Md         -Mm %b"
+		"${c1}  mM-         dM: \`oNN+    :Md         -Mm %b"
+		"${c1}  yM+         dM/+NNo\`     :Md         +My %b"
+		"${c1}  :Mm\`        dMMNs\`       :Md        \`mM: %b"
+		"${c1}   yMy        dMs\`         -ms        yMy  %b"
+		"${c1}    hMy       +.                     yMh   %b"
+		"${c1}     sMd-                          -dMs    %b"
+		"${c1}      -dMy-                      -yMd-     %b"
+		"${c1}        :hMdo.                .odMh:       %b"
+		"${c1}          .+hMNho/:..\`\`..:/ohNMh+.         %b"
+		"${c1}              -+shdmNNNNmdhs+-             %b"
 		"$(tput sgr0)\n")
 		;;
 esac
