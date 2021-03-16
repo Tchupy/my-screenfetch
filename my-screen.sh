@@ -144,15 +144,17 @@ export TERM=xterm-256color
 			output_array=("${output_array[@]}" "$item")
 			i=$((i+1))
 		done
+	# unset separator to use default one
+	unset IFS
 
-# echo MOTD
-
+# find color codes here : https://misc.flogisoft.com/bash/tip_colors_and_formatting
 green="\033[01;32m"
 red="\033[01;31m"
 white="\033[01;37m"
 yellow="\033[01;33m"
 blue="\033[38;5;68m"
 
+# ID from /etc/os-release
 case $ID in
 	"raspbian")
 		# Define color 
@@ -239,7 +241,6 @@ case $ID in
 		# Define color
 		c1=$blue
 		output=("\n"
-
 		"${c1}              -+shdmNNNNmdhs+-             %b"
 		"${c1}          .+hMNho/:..``..:/ohNMh+.           %b"
 		"${c1}        :hMdo.                .odMh:       %b"
@@ -262,6 +263,7 @@ case $ID in
 		"${c1}              -+shdmNNNNmdhs+-             %b"
 		"$(tput sgr0)\n")
 		;;
+	
 esac
 
 
@@ -269,3 +271,6 @@ for ((i=0; i<${#output[@]}; i++));do
 	printf "${output[$i]}" "${output_array[$i]}\n"
 done
 
+if [ -e /var/run/reboot-required ]; then
+	echo "*** System restart required ***"
+fi
