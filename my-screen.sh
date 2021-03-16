@@ -83,12 +83,13 @@ export TERM=xterm-256color
 	output_array=("${output_array[@]}" "$ram")
 
 # GET IP ADDRESS
-        # awful hack to hide tunnel interface (openvpn interface)
-        # TODO : display all IPv4 addresses if there is different interface and/or tunnel
-        ipv4_priv=`ip -4 address show primary scope global | awk '/inet/ && !/tun/ {print $2}'`
+        # display all global IPv4 addresses
+	ipv4_priv=$(ip -4 address show primary scope global | awk '/inet/ {print $NF ":" $2}')
+	for i in $ipv4_priv; do 
+		output_array=("${output_array[@]}" "$(echo -e "$i" |awk -F: \
+			'{printf "\033[01;31mIPv4(%s):\t\033[01;37m%s",$1,$2}')");
+	done
 
-	out_ipv4="$(tput setaf 9)IPv4(private):\t$(tput setaf 15)$ipv4_priv "
-	output_array=("${output_array[@]}" "$out_ipv4")
 
 	# try to get public IPv4 address
 	if [ -x /usr/bin/curl ]; then
