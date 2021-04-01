@@ -22,33 +22,50 @@
 # author=Tchupy
 
 
-
+###########################
 export TERM=xterm-256color
+#color printf code
+red="\033[01;31m"
+white="\033[01;37m"
 
 # welcome message with hostname
 	welcome="$(tput setaf 9)Welcome$(tput setaf 15) @ $(tput setaf 9)`hostname`"
-	output_array=("$welcome")
+	output_title_array=("Welcome ${white}@ ")
+	output_txt_array=("`hostname`")
+	#output_array=("$welcome")
+
 # get date 
 	day="$(tput setaf 9)`date`"
-	output_array=("${output_array[@]}" "$day")
+	output_title_array=("${output_title_array[@]}" "`date` ")
+	output_txt_array=("${output_txt_array[@]}" " ")
+	#output_array=("${output_array[@]}" "$day")
 
 # get OS release name
 	#eval $(cat /etc/os-release |grep PRETTY_NAME)
 	eval $(awk '/^ID=/ {print $0} /^PRETTY_NAME/ {print $0}' /etc/os-release)
-	os_name="$(tput setaf 9)OS:    \t$(tput setaf 15)$PRETTY_NAME" 
-	output_array=("${output_array[@]}" "$os_name")
+	#os_name="$(tput setaf 9)OS:    \t$(tput setaf 15)$PRETTY_NAME" 
+	output_title_array=("${output_title_array[@]}" "OS:")
+	output_txt_array=("${output_txt_array[@]}" "$PRETTY_NAME")
+	#output_array=("${output_array[@]}" "$os_name")
 
 # get kernel info
 	kernel="$(tput setaf 9)Kernel:\t$(tput setaf 15)`uname -rms`" 
-	output_array=("${output_array[@]}" "$kernel")
+	#output_array=("${output_array[@]}" "$kernel")
+	output_title_array=("${output_title_array[@]}" "Kernel:")
+	output_txt_array=("${output_txt_array[@]}" "`uname -rms`")
 
 # get machine uptime 
 	uptime="$(tput setaf 9)Uptime:\t$(tput setaf 15)`uptime -p`"
-	output_array=("${output_array[@]}" "$uptime")
+	#output_array=("${output_array[@]}" "$uptime")
+	output_title_array=("${output_title_array[@]}" "Uptime:")
+	output_txt_array=("${output_txt_array[@]}" "`uptime -p`")
 
 # get numer of packages installed
-	package="$(tput setaf 9)Packages:\t$(tput setaf 15)`dpkg -l | grep -c ^i`"
-	output_array=("${output_array[@]}" "$package")
+	#package="$(tput setaf 9)Packages:\t$(tput setaf 15)`dpkg -l | grep -c ^i`"
+	package="`dpkg -l | grep -c ^i`"
+	#output_array=("${output_array[@]}" "$package")
+	output_title_array=("${output_title_array[@]}" "Packages:")
+	output_txt_array=("${output_txt_array[@]}" "${package}")
 
 # get CPU architecture
 	cpu_arch="unknown"
@@ -57,8 +74,10 @@ export TERM=xterm-256color
 	fi
 
 	# construct output variable
-	cpu="$(tput setaf 9)CPU:    \t$(tput setaf 15)$cpu_arch "
-	output_array=("${output_array[@]}" "$cpu")
+	#cpu="$(tput setaf 9)CPU:    \t$(tput setaf 15)$cpu_arch "
+	#output_array=("${output_array[@]}" "$cpu")
+	output_title_array=("${output_title_array[@]}" "CPU:")
+	output_txt_array=("${output_txt_array[@]}" "${cpu_arch}")
 
 # GET MEMORY USAGE
 	mem_info=$(cat /proc/meminfo |grep -i -E "memtotal|shmem|MemFree|Buffers|cached|sreclaimable")
@@ -79,17 +98,22 @@ export TERM=xterm-256color
 	memory="${usedmem}MB / ${totalmem}MB"
 	
 	# construct output variable
-	ram="$(tput setaf 9)RAM:     \t$(tput setaf 15)$memory "
-	output_array=("${output_array[@]}" "$ram")
+	#ram="$(tput setaf 9)RAM:     \t$(tput setaf 15)$memory "
+	#output_array=("${output_array[@]}" "$ram")
+	output_title_array=("${output_title_array[@]}" "RAM usage:")
+	output_txt_array=("${output_txt_array[@]}" "${memory}")
 
-# GET IP ADDRESS
+# GET IPV4 ADDRESS
         # display all global IPv4 addresses
-	ipv4_priv=$(ip -4 address show primary scope global | awk '/inet/ {print $NF ":" $2}')
-	for i in $ipv4_priv; do 
-		output_array=("${output_array[@]}" "$(echo -e "$i" |awk -F: \
-			'{printf "\033[01;31mIPv4(%s):\t\033[01;37m%s",$1,$2}')");
+	ipv4_priv=$(ip -4 address show primary scope global | awk '/inet/ {printf $NF "@" $2 "@\n"}')
+	for line in $ipv4_priv; do 
+		#printf "line = %s" "$line"
+		readarray -d@ -t ipv4 <<< ${line}
+		output_title_array=("${output_title_array[@]}" "IPv4(${ipv4[0]}):")
+		output_txt_array=("${output_txt_array[@]}" "${ipv4[1]}")
+		unset ipv4
 	done
-
+	
 
 	# try to get public IPv4 address
 	if [ -x /usr/bin/curl ]; then
@@ -98,51 +122,69 @@ export TERM=xterm-256color
 
 	if ! [ -z $ipv4_pub ]; then
 		# we catch the public IP address
-		ipv4_pub="$(tput setaf 9)IPv4(public):\t$(tput setaf 15)$ipv4_pub"
-		output_array=("${output_array[@]}" "$ipv4_pub")	
+		output_title_array=("${output_title_array[@]}" "IPv4(public):")
+		output_txt_array=("${output_txt_array[@]}" "$ipv4_pub")
 	fi
 	
+# GET IPV6 ADDRESSES
 	# search for static IPv6 if exist
-	ipv6_global_static=`ip -6 address show primary scope global -dynamic | grep -E 'inet6' | awk -F' ' '{print $2}'`
+	ipv6_global_static=`ip -6 address show primary scope global -dynamic`
+
 	if [ -n "$ipv6_global_static" ]; then
 		#there is an IPv6 address
-		out_ipv6_global_static="$(tput setaf 9)IPv6(static): \t$(tput setaf 15)$ipv6_global_static "
-		output_array=("${output_array[@]}" "$out_ipv6_global_static")
+		extract=$(awk '/inet6/ {printf $2"@"} /state/ {nameif=$2; sub(":","@",nameif); printf nameif}' <<< "$ipv6_global_static")
+		readarray -d@ -t ipv6_static <<< ${extract[@]}
+		output_title_array=("${output_title_array[@]}" "IPv6(static-${ipv6_static[0]}):")
+		output_txt_array=("${output_txt_array[@]}" "${ipv6_static[1]}")
+
 	fi
 
 	# search for SLAAC address 
-	ipv6_slaac=`ip -6 address show primary scope global dynamic | grep -E 'inet6' | awk -F' ' '{print $2}'`
+	ipv6_slaac="$(ip -6 address show primary scope global dynamic)" 
 	if [ -n "$ipv6_slaac" ]; then
 		#there is an SLAAC IPv6 address
-		out_ipv6_global_slaac="$(tput setaf 9)IPv6(slaac): \t$(tput setaf 15)$ipv6_slaac "
-		output_array=("${output_array[@]}" "$out_ipv6_global_slaac")
+		extract=$(awk '/inet6/ {printf $2"@"} /state/ {nameif=$2; sub(":","@",nameif); printf nameif}' <<< "$ipv6_slaac")
+		readarray -d@ -t ipv6_slaac <<< ${extract[@]}
+		output_title_array=("${output_title_array[@]}" "IPv6(slaac-${ipv6_slaac[0]}):")
+		output_txt_array=("${output_txt_array[@]}" "${ipv6_slaac[1]}")
 	fi
 
 	# search for temporary IPv6 address (IPv6 privacy extension enabled)
-	# at least one temporary IPv6 address exists
-	# extract only address that is not deprecated
-	# extract first address (if there is many temp address, 1st one may be the oldest & the one that must be used)
-	ipv6_tmp=`ip -6 address show primary scope global temporary -deprecated | grep -E 'inet6' | awk -F' ' 'NR==1 {print $2}'`
+	# extract only addresses that are not deprecated
+	# extract first address (if there is many temp address, 1st one may be the oldest & so it is used)
+	ipv6_tmp=`ip -6 address show primary scope global temporary -deprecated `
 	if [ -n "$ipv6_tmp" ]; then
 		#there is an temporary IPv6 address
-		out_ipv6_global_tmp="$(tput setaf 9)IPv6(tmp): \t$(tput setaf 15)$ipv6_tmp "
-		output_array=("${output_array[@]}" "$out_ipv6_global_tmp")
+		# extract interface name & IP address
+		extract=$(awk '/inet6/ {printf $2"@"} /state/ {nameif=$2; sub(":","@",nameif); printf nameif}' <<< "$ipv6_tmp")
+		readarray -d@ -t ipv6_tmp <<< ${extract[@]}
+		output_title_array=("${output_title_array[@]}" "IPv6(tmp-${ipv6_tmp[0]}):")
+		output_txt_array=("${output_txt_array[@]}" "${ipv6_tmp[1]}")
 	fi
 
 
 # GET HDD space
 	# get all filesystem but temp FS
-	hdd_menu=`df -h -x tmpfs -x devtmpfs -x squashfs | 
-		awk '
-			NR==1 {printf("\033[01;31m%-15s%s \t %s \t %s \t %s \t%s\n",$1, $2, $3, $4, $5, $6)}
-			NR!=1 {printf("\033[01;31m%-15s\033[1;37m%s \t %s \t %s \t %s \t%s\n", $1, $2, $3, $4, $5, $6)}'`
+	hdd_menu=$(df -h -x tmpfs -x devtmpfs -x squashfs |
+	   awk -v red=$red -v white=$white '
+	   	NR==1 { printf("%s%-15s%s \t %s \t %s \t %s \t%s\n", red, $1, $2, $3, $4, $5, $6) }
+	   	NR!=1 {
+	   	  if (length($1)< 18)
+	   		printf("%s%-15s%s%s \t %s \t %s \t %s \t%s\n", red, $1, white, $2, $3, $4, $5, $6)
+	     	  else {
+	       		printf("%s%s\n", red, $1)
+	       		printf("%s%19s\t%s\t %s \t %s \t%s\n", white, $2, $3, $4, $5, $6)
+	     	  }
+	     	}
+	   '
+	)
 
 	# set separator as '\n' character
 	IFS=$'\n'
 	i=1; 
 	for item in $hdd_menu;
 		do
-			output_array=("${output_array[@]}" "$item")
+			output_title_array=("${output_title_array[@]}" "$item")
 			i=$((i+1))
 		done
 	# unset separator to use default one
@@ -162,27 +204,27 @@ case $ID in
 		c1=$green
 		c2=$red
 
-		output=("\n"
-		"${c1}    .',;:cc;,'.    .,;::c:,,.    %b"
-		"${c1}   ,ooolcloooo:  'oooooccloo:    %b"
-		"${c1}   .looooc;;:ol  :oc;;:ooooo'    %b"
-		"${c1}     ;oooooo:      ,ooooooc.     %b"
-		"${c1}     .,:;'.       .;:;'.         %b"
-		"${c2}       .... ..'''''. ....        %b"
-		"${c2}     .''.   ..'''''.  ..''.      %b"
-		"${c2}     ..  .....    .....  ..      %b"
-		"${c2}    .  .'''''''  .''''''.  .     %b"
-		"${c2}  .'' .''''''''  .'''''''. ''.   %b"
-		"${c2}  '''  '''''''    .''''''  '''   %b"
-		"${c2}  .'    ........... ...    .'.   %b"
-		"${c2}    ....    ''''''''.   .''.     %b"
-		"${c2}    '''''.  ''''''''. .'''''     %b"
-		"${c2}     '''''.  .'''''. .'''''.     %b"
-		"${c2}      ..''.     .    .''..       %b"
-		"${c2}            .'''''''             %b"
-		"${c2}             ......              %b"
-		"$(tput sgr0)\n")
-		;;
+		output=(
+		"${c1}                                %-30b%b"
+		"${c1}    .',;:cc;,'.    .,;::c:,,.   %-30b%b"
+		"${c1}   ,ooolcloooo:  'oooooccloo:   %-30b%b"
+		"${c1}   .looooc;;:ol  :oc;;:ooooo'   %-30b%b"
+		"${c1}     ;oooooo:      ,ooooooc.    %-30b%b"
+		"${c1}     .,:;'.       .;:;'.        %-30b%b"
+		"${c2}       .... ..'''''. ....       %-30b%b"
+		"${c2}     .''.   ..'''''.  ..''.     %-30b%b"
+		"${c2}     ..  .....    .....  ..     %-30b%b"
+		"${c2}    .  .'''''''  .''''''.  .    %-30b%b"
+		"${c2}  .'' .''''''''  .'''''''. ''.  %-30b%b"
+		"${c2}  '''  '''''''    .''''''  '''  %-30b%b"
+		"${c2}  .'    ........... ...    .'.  %-30b%b"
+		"${c2}    ....    ''''''''.   .''.    %-30b%b"
+		"${c2}    '''''.  ''''''''. .'''''    %-30b%b"
+		"${c2}     '''''.  .'''''. .'''''.    %-30b%b"
+		"${c2}      ..''.     .    .''..      %-30b%b"
+		"${c2}            .'''''''            %-30b%b"
+		"${c2}             ......             %-30b%b"
+		);;
 
 	"ubuntu")
 		# Define color 
@@ -209,8 +251,7 @@ case $ID in
 		"${c2}               /osyyyyyyo${c3}++ooo+++/    %b"
 		"${c2}                   \`\`\`\`\` ${c3}+oo+++o\:    %b"
 		"${c3}                          \`oo++.      %b"
-		"$(tput sgr0)\n")
-		;;
+		);;
 
 	"debian")
 		# Define color 
@@ -236,8 +277,7 @@ case $ID in
 		"${c1}            \`\"Y\$b._             %b"
 		"${c1}                \`\"\"\"\"           %b"
 		"${c1}                                %b"
-		"$(tput sgr0)\n")
-		;;
+		);;
 	"osmc")
 		# Define color
 		c1=$blue
@@ -262,16 +302,28 @@ case $ID in
 		"${c1}        :hMdo.                .odMh:       %b"
 		"${c1}          .+hMNho/:..\`\`..:/ohNMh+.         %b"
 		"${c1}              -+shdmNNNNmdhs+-             %b"
-		"$(tput sgr0)\n")
-		;;
+		);;
 	
 esac
 
+# search fo longest array
+(( ${#output[@]} > ${#output_title_array[@]}  )) && index=${#output[@]}  || index=${#output_title_array[@]}
 
-for ((i=0; i<${#output[@]}; i++));do
-	printf "${output[$i]}" "${output_array[$i]}\n"
+padding="${c1}                                %-30b%b"
+
+for ((i=0; i<$index; i++));do
+	if (( $i < ${#output[@]} )); then
+		printf  "${output[$i]}" "${red}${output_title_array[$i]}" "${white}${output_txt_array[$i]}\n"
+	else
+		printf  "${padding}\n" "${red}${output_title_array[$i]}" "${white}${output_txt_array[$i]}" 
+	fi
 done
+
+# reset color terminal to default
+printf "$(tput sgr0)\n"
 
 if [ -e /var/run/reboot-required ]; then
 	echo "*** System restart required ***"
 fi
+
+
