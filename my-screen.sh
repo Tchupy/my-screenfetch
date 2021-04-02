@@ -167,13 +167,13 @@ white="\033[01;37m"
 	# get all filesystem but temp FS
 	hdd_menu=$(df -h -x tmpfs -x devtmpfs -x squashfs |
 	   awk -v red=$red -v white=$white '
-	   	NR==1 { printf("%s%-15s%s \t %s \t %s \t %s \t%s\n", red, $1, $2, $3, $4, $5, $6) }
+	   	NR==1 { printf("%s%-22s%s \t %s \t %s \t %s \t%s\n", red, $1, $2, $3, $4, $5, $6) }
 	   	NR!=1 {
 	   	  if (length($1)< 18)
-	   		printf("%s%-15s%s%s \t %s \t %s \t %s \t%s\n", red, $1, white, $2, $3, $4, $5, $6)
+	   		printf("%s%-22s%s%s \t %s \t %s \t %s \t%s\n", red, $1, white, $2, $3, $4, $5, $6)
 	     	  else {
 	       		printf("%s%s\n", red, $1)
-	       		printf("%s%19s\t%s\t %s \t %s \t%s\n", white, $2, $3, $4, $5, $6)
+	       		printf("%s%26s\t%s\t %s \t %s \t%s\n", white, $2, $3, $4, $5, $6)
 	     	  }
 	     	}
 	   '
@@ -232,25 +232,26 @@ case $ID in
 		c2=$red
 		c3=$yellow
 
-		output=("\n"
-		"${c2}                          ./+o+-      %b"
-		"${c1}                  yyyyy- ${c2}-yyyyyy+     %b"
-		"${c1}               ${c1}://+//////${c2}-yyyyyyo     %b"
-		"${c3}           .++ ${c1}.:/++++++/-${c2}.+sss/\`     %b"
-		"${c3}         .:++o:  ${c1}/++++++++/:--:/-     %b"
-		"${c3}        o:+o+:++.${c1}\`..\`\`\`.-/oo+++++/    %b"
-		"${c3}       .:+o:+o/.${c1}          \`+sssoo+/   %b"
-		"${c1}  .++/+:${c3}+oo+o:\`${c1}             /sssooo.  %b"
-		"${c1} /+++//+:${c3}\`oo+o${c1}               /::--:.  %b"
-		"${c1} \+/+o+++${c3}\`o++o${c2}               ++////.  %b"
-		"${c1}  .++.o+${c3}++oo+:\`${c2}             /dddhhh.  %b"
-		"${c3}       .+.o+oo:.${c2}          \`oddhhhh+   %b"
-		"${c3}        \+.++o+o\`${c2}\`-\`\`\`\`.:ohdhhhhh+    %b"
-		"${c3}         \`:o+++ ${c2}\`ohhhhhhhhyo++os:     %b"
-		"${c3}           .o:${c2}\`.syhhhhhhh/${c3}.oo++o\`     %b"
-		"${c2}               /osyyyyyyo${c3}++ooo+++/    %b"
-		"${c2}                   \`\`\`\`\` ${c3}+oo+++o\:    %b"
-		"${c3}                          \`oo++.      %b"
+		output=(
+		"${c1}                                %-30b%b"
+		"${c2}                          ./+o+-      %-30b%b"
+		"${c1}                  yyyyy- ${c2}-yyyyyy+     %-30b%b"
+		"${c1}               ${c1}://+//////${c2}-yyyyyyo     %-30b%b"
+		"${c3}           .++ ${c1}.:/++++++/-${c2}.+sss/\`     %-30b%b"
+		"${c3}         .:++o:  ${c1}/++++++++/:--:/-     %-30b%b"
+		"${c3}        o:+o+:++.${c1}\`..\`\`\`.-/oo+++++/    %-30b%b"
+		"${c3}       .:+o:+o/.${c1}          \`+sssoo+/   %-30b%b"
+		"${c1}  .++/+:${c3}+oo+o:\`${c1}             /sssooo.  %-30b%b"
+		"${c1} /+++//+:${c3}\`oo+o${c1}               /::--:.  %-30b%b"
+		"${c1} \+/+o+++${c3}\`o++o${c2}               ++////.  %-30b%b"
+		"${c1}  .++.o+${c3}++oo+:\`${c2}             /dddhhh.  %-30b%b"
+		"${c3}       .+.o+oo:.${c2}          \`oddhhhh+   %-30b%b"
+		"${c3}        \+.++o+o\`${c2}\`-\`\`\`\`.:ohdhhhhh+    %-30b%b"
+		"${c3}         \`:o+++ ${c2}\`ohhhhhhhhyo++os:     %-30b%b"
+		"${c3}           .o:${c2}\`.syhhhhhhh/${c3}.oo++o\`     %-30b%b"
+		"${c2}               /osyyyyyyo${c3}++ooo+++/    %-30b%b"
+		"${c2}                   \`\`\`\`\` ${c3}+oo+++o\:    %-30b%b"
+		"${c3}                          \`oo++.      %-30b%b"
 		);;
 
 	"debian")
@@ -258,50 +259,52 @@ case $ID in
 		c1=$white
 		c2=$red
 
-		output=("\n"
-		"${c1}         _,met\$\$\$\$\$gg.          %b"
-		"${c1}      ,g\$\$\$\$\$\$\$\$\$\$\$\$\$\$\$P.       %b"
-		"${c1}    ,g\$\$P\"\"       \"\"\"Y\$\$.\".     %b"
-		"${c1}   ,\$\$P'              \`\$\$\$.     %b"
-		"${c1}  ',\$\$P       ,ggs.     \`\$\$b:   %b"
-		"${c1}  \`d\$\$'     ,\$P\"\'   ${c2}.${c1}    \$\$\$    %b"
-		"${c1}   \$\$P      d\$\'     ${c2},${c1}    \$\$P    %b"
-		"${c1}   \$\$:      \$\$.   ${c2}-${c1}    ,d\$\$'    %b"
-		"${c1}   \$\$\;      Y\$b._   _,d\$P'     %b"
-		"${c1}   Y\$\$.    ${c2}\`.${c1}\`\"Y\$\$\$\$P\"'         %b"
-		"${c1}   \`\$\$b      ${c2}\"-.__              %b"
-		"${c1}    \`Y\$\$                        %b"
-		"${c1}     \`Y\$\$.                      %b"
-		"${c1}       \`\$\$b.                    %b"
-		"${c1}         \`Y\$\$b.                 %b"
-		"${c1}            \`\"Y\$b._             %b"
-		"${c1}                \`\"\"\"\"           %b"
-		"${c1}                                %b"
+		output=(
+		"${c1}                                %-30b%b"
+		"${c1}         _,met\$\$\$\$\$gg.          %-30b%b"
+		"${c1}      ,g\$\$\$\$\$\$\$\$\$\$\$\$\$\$\$P.       %-30b%b"
+		"${c1}    ,g\$\$P\"\"       \"\"\"Y\$\$.\".     %-30b%b"
+		"${c1}   ,\$\$P'              \`\$\$\$.     %-30b%b"
+		"${c1}  ',\$\$P       ,ggs.     \`\$\$b:   %-30b%b"
+		"${c1}  \`d\$\$'     ,\$P\"\'   ${c2}.${c1}    \$\$\$    %-30b%b"
+		"${c1}   \$\$P      d\$\'     ${c2},${c1}    \$\$P    %-30b%b"
+		"${c1}   \$\$:      \$\$.   ${c2}-${c1}    ,d\$\$'    %-30b%b"
+		"${c1}   \$\$\;      Y\$b._   _,d\$P'     %-30b%b"
+		"${c1}   Y\$\$.    ${c2}\`.${c1}\`\"Y\$\$\$\$P\"'         %-30b%b"
+		"${c1}   \`\$\$b      ${c2}\"-.__              %-30b%b"
+		"${c1}    \`Y\$\$                        %-30b%b"
+		"${c1}     \`Y\$\$.                      %-30b%b"
+		"${c1}       \`\$\$b.                    %-30b%b"
+		"${c1}         \`Y\$\$b.                 %-30b%b"
+		"${c1}            \`\"Y\$b._             %-30b%b"
+		"${c1}                \`\"\"\"\"           %-30b%b"
+		"${c1}                                %-30b%b"
 		);;
 	"osmc")
 		# Define color
 		c1=$blue
-		output=("\n"
-		"${c1}              -+shdmNNNNmdhs+-             %b"
-		"${c1}          .+hMNho/:..``..:/ohNMh+.           %b"
-		"${c1}        :hMdo.                .odMh:       %b"
-		"${c1}      -dMy-                      -yMd-     %b"
-		"${c1}     sMd-                          -dMs    %b"
-		"${c1}    hMy       +.            .+       yMh   %b"
-		"${c1}   yMy        dMs.        .sMd        yMy  %b"
-		"${c1}  :Mm         dMNMs\`    \`sMNMd        \`mM: %b"
-		"${c1}  yM+         dM//mNs\`\`sNm//Md         +My %b"
-		"${c1}  mM-         dM:  +NNNN+  :Md         -Mm %b"
-		"${c1}  mM-         dM: \`oNN+    :Md         -Mm %b"
-		"${c1}  yM+         dM/+NNo\`     :Md         +My %b"
-		"${c1}  :Mm\`        dMMNs\`       :Md        \`mM: %b"
-		"${c1}   yMy        dMs\`         -ms        yMy  %b"
-		"${c1}    hMy       +.                     yMh   %b"
-		"${c1}     sMd-                          -dMs    %b"
-		"${c1}      -dMy-                      -yMd-     %b"
-		"${c1}        :hMdo.                .odMh:       %b"
-		"${c1}          .+hMNho/:..\`\`..:/ohNMh+.         %b"
-		"${c1}              -+shdmNNNNmdhs+-             %b"
+		output=(
+		"${c1}                                           %-30b%b"
+		"${c1}              -+shdmNNNNmdhs+-             %-30b%b"
+		"${c1}          .+hMNho/:..``..:/ohNMh+.           %-30b%b"
+		"${c1}        :hMdo.                .odMh:       %-30b%b"
+		"${c1}      -dMy-                      -yMd-     %-30b%b"
+		"${c1}     sMd-                          -dMs    %-30b%b"
+		"${c1}    hMy       +.            .+       yMh   %-30b%b"
+		"${c1}   yMy        dMs.        .sMd        yMy  %-30b%b"
+		"${c1}  :Mm         dMNMs\`    \`sMNMd        \`mM: %-30b%b"
+		"${c1}  yM+         dM//mNs\`\`sNm//Md         +My %-30b%b"
+		"${c1}  mM-         dM:  +NNNN+  :Md         -Mm %-30b%b"
+		"${c1}  mM-         dM: \`oNN+    :Md         -Mm %-30b%b"
+		"${c1}  yM+         dM/+NNo\`     :Md         +My %-30b%b"
+		"${c1}  :Mm\`        dMMNs\`       :Md        \`mM: %-30b%b"
+		"${c1}   yMy        dMs\`         -ms        yMy  %-30b%b"
+		"${c1}    hMy       +.                     yMh   %-30b%b"
+		"${c1}     sMd-                          -dMs    %-30b%b"
+		"${c1}      -dMy-                      -yMd-     %-30b%b"
+		"${c1}        :hMdo.                .odMh:       %-30b%b"
+		"${c1}          .+hMNho/:..\`\`..:/ohNMh+.         %-30b%b"
+		"${c1}              -+shdmNNNNmdhs+-             %-30b%b"
 		);;
 	
 esac
@@ -309,7 +312,7 @@ esac
 # search fo longest array
 (( ${#output[@]} > ${#output_title_array[@]}  )) && index=${#output[@]}  || index=${#output_title_array[@]}
 
-padding="${c1}                                %-30b%b"
+padding="${c1}                                %-40b"
 
 for ((i=0; i<$index; i++));do
 	if (( $i < ${#output[@]} )); then
