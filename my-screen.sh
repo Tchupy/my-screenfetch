@@ -102,12 +102,22 @@ export TERM=xterm-256color
 		output_array=("${output_array[@]}" "$ipv4_pub")	
 	fi
 	
-	# search for static IPv6 if exist
-	ipv6_global_static=`ip -6 address show primary scope global -dynamic | grep -E 'inet6' | awk -F' ' '{print $2}'`
+	## search for static IPv6 if exist
+	#ipv6_global_static=`ip -6 address show primary scope global -dynamic | grep -E 'inet6' | awk -F' ' '{print $2}'`
+	#if [ -n "$ipv6_global_static" ]; then
+	#	#there is an IPv6 address
+	#	out_ipv6_global_static="$(tput setaf 9)IPv6(static): \t$(tput setaf 15)$ipv6_global_static "
+	#	output_array=("${output_array[@]}" "$out_ipv6_global_static")
+	#fi
+
+	ipv6_global_static=`ip -o -6 address show primary scope global -dynamic | awk '{print $2"#"$4}'`
+
 	if [ -n "$ipv6_global_static" ]; then
 		#there is an IPv6 address
-		out_ipv6_global_static="$(tput setaf 9)IPv6(static): \t$(tput setaf 15)$ipv6_global_static "
-		output_array=("${output_array[@]}" "$out_ipv6_global_static")
+		for ipv6 in $ipv6_global_static; do
+			output_array=("${output_array[@]}" "$(echo -e "$ipv6" |awk -F# \
+				'{printf "\033[01;31mIPv6(%s):\t\033[01;37m%s",$1,$2}')");
+		done
 	fi
 
 	# search for SLAAC address 
