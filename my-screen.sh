@@ -142,7 +142,7 @@ export TERM=xterm-256color
 
 # GET HDD space
 	# get all filesystem but temp FS
-	hdd_menu=`df -h -x tmpfs -x devtmpfs -x squashfs | 
+	hdd_menu=`df -h -x tmpfs -x devtmpfs -x squashfs -x overlay | 
 		awk '
 			NR==1 {printf("\033[01;31m%-15s%s \t %s \t %s \t %s \t%s\n",$1, $2, $3, $4, $5, $6)}
 			NR!=1 {printf("\033[01;31m%-15s\033[1;37m%s \t %s \t %s \t %s \t%s\n", $1, $2, $3, $4, $5, $6)}'`
