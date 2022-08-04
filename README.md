@@ -2,7 +2,7 @@
 
 my-screen - a CLI Bash script to system info
 
-based on ScreenFetch script from Brett Bohnenkamper <kittykatt@kittykatt.us>
+based on [ScreenFetch](https://github.com/KittyKatt/screenFetch) script from Brett Bohnenkamper <kittykatt@kittykatt.us> 
 (I added IP address info & Filesystem info)
 
 support : Ubuntu, Debian & Raspberry (Raspbian) distro
