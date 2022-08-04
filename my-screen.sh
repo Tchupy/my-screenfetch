@@ -18,8 +18,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# version=1.0
+# version=2.0
 # author=Tchupy
+# install note : 
+#	1. copy file to /etc/update-motd/ with no extension
+# 	2. remove /etc/motd static file
+# 	3. enjoy
 
 
 
@@ -53,7 +57,9 @@ export TERM=xterm-256color
 # get CPU architecture
 	cpu_arch="unknown"
 	if [ -r /proc/cpuinfo ]; then
-		cpu_arch=`cat /proc/cpuinfo | grep -m1 "model name" | cut -d: -f2 | sed 's/^\s//'`
+		#cpu_arch=`cat /proc/cpuinfo | grep -m1 "model name" | cut -d: -f2 | sed 's/^\s//'`
+		# cpuinfo file has different format on arm arch & amd64 arch 
+		cpu_arch=$(cat /proc/cpuinfo | awk -F: '/Model/ {print $2} /model name/ {print $2}' | sed 's/^\s//')
 	fi
 
 	# construct output variable
@@ -282,6 +288,10 @@ for ((i=0; i<${#output[@]}; i++));do
 	printf "${output[$i]}" "${output_array[$i]}\n"
 done
 
+
+# echo msg if an update requires to reboot system
 if [ -e /var/run/reboot-required ]; then
 	echo "*** System restart required ***"
 fi
+
+
